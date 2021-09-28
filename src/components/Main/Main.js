@@ -5,7 +5,9 @@ import Buttons from '../Buttons/Buttons';
 import ColumnSection from '../ColumnSection/ColumnSection';
 import CheckboxBankNote from '../CheckboxBankNote/CheckboxBankNote';
 import CashItem from '../CashItem/CashItem';
-import { addAmount, cleanAmount, requiredTotalAmount } from '../../redux/actionCreator';
+import { addAmount, cleanAmount, givenMoney, requiredTotalAmount, showAlert, updateBalance } from '../../redux/actionCreator';
+import { getMoneyATM } from '../../logic';
+import Alert from '../Alert/Alert';
 
 const MainWrapper = styled.section`
     flex: 1 0 auto;
@@ -95,15 +97,43 @@ const Main = (props) => {
     }
     const submitHandler = (ev) => {
         ev.preventDefault()
-        props.clean()
-        props.submitRequiredTotalAmount(ev.target.firstElementChild.value)
-        ev.target.firstElementChild.value = '';
+        if (props.getBalance < 50) {
+            props.showAlert('Деньги закончились')
+            props.clean() 
+        }
+        if (props.validAmountRequired % 50 === 0) {
+            let moneyForUser = getMoneyATM(props.validAmountRequired, props.limits);
+            props.submitRequiredTotalAmount(props.validAmountRequired)
+            props.updateGivenMoney(moneyForUser)
+            props.updateBalance(Object.values(props.limits).reduce((acc, curr) => Number(acc) + Number(curr.sum),0))
+            props.clean()
+        } else {
+            ev.target.firstElementChild.focus()
+            props.showAlert('Введите сумму кратную 50')
+            props.clean()
+            
+        }
+
+    }
+    
+    const checkCount = (bankNote) => {
+        if(props.getBalance <= 50) return
+        let count  = 0
+        Object.entries(props.givenMoney).forEach(item => {
+            if (Number(item[0]) === bankNote) {
+                count = item[1]
+            }
+        })
+        return count
     }
 
+    props.updateBalance(Object.values(props.limits).reduce((acc, curr) => Number(acc) + Number(curr.sum),0))
 
     return (
         <MainWrapper>
-            <Row>
+            {props.alertPermission
+                ? <Alert/>
+                : (<Row>
                 <ColumnSection>
                     <Title>Введите сумму</Title>
                     <SubTitle>Какую сумму хотите снять?</SubTitle>
@@ -118,7 +148,9 @@ const Main = (props) => {
                         <Button
                             onClick={cleanInputHandler}
                             type='button'
-                        >Стереть</Button>
+                        >
+                            Стереть
+                        </Button>
                     </FormRequired>
                     <Buttons/>
                 </ColumnSection>
@@ -126,22 +158,27 @@ const Main = (props) => {
                     <FormForDifferentVariansNotes>
                         <Legend>Выберете <br/> купюры</Legend>
                         {[5000,2000,1000,500,200,100,50].map((note, i)=> {
-                            return <CheckboxBankNote key = {i} num = {i} note = {note}/>
+                            return <CheckboxBankNote 
+                                            key = {i} 
+                                            num = {i} 
+                                            note = {note}/>
                         })}
                     </FormForDifferentVariansNotes>
                 </ColumnSection>
                 <ColumnSection>
-                    {props.showInfo 
-                        ? <Title><b>Info</b> - <i>купюр осталовь</i></Title>  
-                        : <Title>Выдано пользователю</Title>}
+                    <Title>Выдано пользователю</Title>
                     <Cash>
-                        {[5000,2000,1000,500,200,100,50].map((item,i)=>{
-                            return <CashItem key={i} item={item}/>
+                        {[5000,2000,1000,500,200,100,50].map((item,i) => {
+                            return <CashItem 
+                                        key = {i} 
+                                        item = {item} 
+                                        count = {checkCount(item)}/>
                         })}
                     </Cash>
-                    <Balance>Остаток:<span><b>0</b></span></Balance>
+                    <Balance>Остаток:<span><b>{props.getBalance}</b></span></Balance>
                 </ColumnSection>
-            </Row>
+            </Row>)
+            }
         </MainWrapper>
 
     )
@@ -150,7 +187,11 @@ const Main = (props) => {
 const mapStateToProps = (state) => {
     return {
         validAmountRequired: state.validInput,
-        showInfo: state.showInfo
+        showInfo: state.showInfo,
+        limits: state.limits,
+        alertPermission: state.showAlert.state,
+        givenMoney: state.givenMoney,
+        getBalance: state.balance
     }
 }
 
@@ -158,8 +199,12 @@ const mapDispatchToProps = (dispatch) => {
     return {
         addNumber: (num) => dispatch(addAmount(num)),
         clean: () => dispatch(cleanAmount()),
-        submitRequiredTotalAmount: (total) => dispatch(requiredTotalAmount(total))
+        submitRequiredTotalAmount: (total) => dispatch(requiredTotalAmount(total)),
+        updateGivenMoney: (data) => dispatch(givenMoney(data)),
+        showAlert: (text) => dispatch(showAlert(text)),
+        updateBalance: (total) => dispatch(updateBalance(total))
     }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main)
+

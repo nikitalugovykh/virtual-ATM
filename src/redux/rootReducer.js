@@ -4,7 +4,10 @@ import { ADD_AMOUNT,
         ADD_AMOUNT_NUMPAD, 
         SELECT_NOTE, 
         UNSELECT_NOTE, 
-        SHOW_INFO 
+        SHOW_INFO, 
+        GIVEN_MONEY,
+        SHOW_ALERT,
+        UPDATE_BALANCE
 } from "./actionTypes"
 
 export const rootReducer = (state, action) => {
@@ -23,6 +26,12 @@ export const rootReducer = (state, action) => {
             return {...state, selectedNotes: state.selectedNotes.filter(item => item !== action.payload)}
         case SHOW_INFO:
             return {...state, showInfo: !state.showInfo}
+        case GIVEN_MONEY:
+            return {...state, givenMoney: action.payload}
+        case SHOW_ALERT:
+            return {...state, showAlert: {state: !state.showAlert.state, text: action.text}}
+        case UPDATE_BALANCE:
+            return {...state, balance: action.total}
         default:
             return state
     }

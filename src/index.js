@@ -5,6 +5,8 @@ import { createStore } from 'redux'
 import App from './components/App/App';
 import { createGlobalStyle } from 'styled-components';
 import { rootReducer } from './redux/rootReducer';
+import { LimitAmount } from './logic';
+
 
 const GlobalStyle = createGlobalStyle`
   *,
@@ -27,11 +29,22 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
+// Вводить количество купюр по номиналу соответственно 50,100,200,500,1000,2000,5000
+const limits = new LimitAmount(342,124,2154,4365,2543,562,546);
+
+
 const INITIALSTATE = {
   validInput: '',
   requiredTotalAmount: '',
   selectedNotes: [],
-  showInfo: false
+  showInfo: false,
+  limits,
+  givenMoney: {},
+  showAlert: {
+    state: false,
+    text: ''
+  },
+  balance: 0
 
 }
 

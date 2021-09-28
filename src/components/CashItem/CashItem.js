@@ -1,8 +1,17 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
-const CashItem = ({item}) => {
+const CashItem = ({item, count}) => {
+
     return(
-        <div>{item}: <span><b>0</b></span></div>
+        <div>{item}: <span><b>{count}</b></span></div>
     )
 }
-export default CashItem
+
+const mapStateToProps = (props) => {
+    return {
+        givenMoney: props.givenMoney
+    }
+}
+
+export default connect(mapStateToProps, null)(CashItem)

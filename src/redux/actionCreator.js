@@ -1,4 +1,15 @@
-import { ADD_AMOUNT, CLEAN_AMOUNT, REQUIRED_TOTAL_AMOUNT, ADD_AMOUNT_NUMPAD, SELECT_NOTE, UNSELECT_NOTE, SHOW_INFO } from "./actionTypes"
+import { 
+    ADD_AMOUNT, 
+    CLEAN_AMOUNT, 
+    REQUIRED_TOTAL_AMOUNT, 
+    ADD_AMOUNT_NUMPAD, 
+    SELECT_NOTE, 
+    UNSELECT_NOTE, 
+    SHOW_INFO, 
+    GIVEN_MONEY, 
+    SHOW_ALERT, 
+    UPDATE_BALANCE
+} from "./actionTypes"
 
 export const addAmount = (payload) => {
     return  {
@@ -38,5 +49,26 @@ export const unselectNote = (payload) => {
 export const showInfo = () => {
     return  {
         type: SHOW_INFO,
+    }
+} 
+
+export const givenMoney = (payload) => {
+    return  {
+        type: GIVEN_MONEY,
+        payload
+    }
+} 
+
+export const showAlert = (text) => {
+    return  {
+        type: SHOW_ALERT,
+        text
+    }
+} 
+
+export const updateBalance = (total) => {
+    return  {
+        type: UPDATE_BALANCE,
+        total
     }
 } 

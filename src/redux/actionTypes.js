@@ -5,3 +5,6 @@ export const REQUIRED_TOTAL_AMOUNT = 'REQUIRED_TOTAL_AMOUNT';
 export const SELECT_NOTE = 'SELECT_NOTE';
 export const UNSELECT_NOTE = 'UNSELECT_NOTE';
 export const SHOW_INFO = 'SHOW_INFO';
+export const GIVEN_MONEY = 'GIVEN_MONEY';
+export const SHOW_ALERT = 'SHOW_ALERT';
+export const UPDATE_BALANCE = 'UPDATE_BALANCE';

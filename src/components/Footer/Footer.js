@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../Button/Button';
 
@@ -12,15 +13,23 @@ const  FooterStyle = styled.footer`
     gap: 30px;
 `
 
-const Footer = () => {
+const Footer = (props) => {
     return (
         <FooterStyle>
             <Button 
                 info = 'Выдать' 
                 color = '#489048'
+                disabled = {props.showAlert}
             />
-            <Button info = 'Справка'/>
+            <Button info = 'Справка'  disabled = {props.showAlert}/>
         </FooterStyle>
     )
 }
-export default Footer
+
+const mapStateToProps = (state) => {
+    return {
+        showAlert: state.showAlert.state
+    }
+}
+
+export default connect(mapStateToProps, null)(Footer)
