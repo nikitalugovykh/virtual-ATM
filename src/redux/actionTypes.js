@@ -1,0 +1,7 @@
+export const ADD_AMOUNT = 'ADD_AMOUNT';
+export const ADD_AMOUNT_NUMPAD = 'ADD_AMOUNT_NUMPAD';
+export const CLEAN_AMOUNT = 'CLEAN_AMOUNT';
+export const REQUIRED_TOTAL_AMOUNT = 'REQUIRED_TOTAL_AMOUNT';
+export const SELECT_NOTE = 'SELECT_NOTE';
+export const UNSELECT_NOTE = 'UNSELECT_NOTE';
+export const SHOW_INFO = 'SHOW_INFO';
