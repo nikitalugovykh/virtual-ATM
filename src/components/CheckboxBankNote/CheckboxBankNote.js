@@ -33,7 +33,7 @@ const CheckboxBankNote = ({note, num, updateSelectedNote, removeSelectedNote}) =
                 id = {`ckeckbox${num}`}
                 type="checkbox" 
                 onChange = {checkboxHandler}
-                checked
+                
             />
             <Label htmlFor = {`ckeckbox${num}`}>{note}</Label>
         </CheckboxWrapper>
