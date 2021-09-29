@@ -9,7 +9,8 @@ import {
     GIVEN_MONEY, 
     SHOW_ALERT, 
     UPDATE_BALANCE,
-    CLEAN_SELECT_NOTE
+    CLEAN_SELECT_NOTE,
+    UPDATE_CHECKBOX_STATUS
 } from "./actionTypes"
 
 export const addAmount = (payload) => {
@@ -79,3 +80,4 @@ export const updateBalance = (total) => {
         total
     }
 }
+

@@ -16,7 +16,7 @@ const Label = styled.label`
     user-select: none;
 `
 
-const CheckboxBankNote = ({note, num, updateSelectedNote, removeSelectedNote}) => {
+const CheckboxBankNote = ({note, num, updateSelectedNote, removeSelectedNote, updateCheckboxStatus}) => {
 
     const checkboxHandler = (ev) => {
         if(ev.target.checked) {
@@ -30,12 +30,12 @@ const CheckboxBankNote = ({note, num, updateSelectedNote, removeSelectedNote}) =
     return (
         <CheckboxWrapper>
             <Input 
-                id = {`ckeckbox${num}`}
+                id = {`checkbox${num}`}
                 type="checkbox" 
                 onChange = {checkboxHandler}
                 
             />
-            <Label htmlFor = {`ckeckbox${num}`}>{note}</Label>
+            <Label htmlFor = {`checkbox${num}`}>{note}</Label>
         </CheckboxWrapper>
     );
 }
