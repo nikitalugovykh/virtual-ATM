@@ -10,7 +10,6 @@ import {
     SHOW_ALERT, 
     UPDATE_BALANCE,
     CLEAN_SELECT_NOTE,
-    UPDATE_CHECKBOX_STATUS
 } from "./actionTypes"
 
 export const addAmount = (payload) => {

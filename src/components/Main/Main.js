@@ -135,6 +135,7 @@ const Main = (props) => {
             }
             props.submitRequiredTotalAmount(props.validAmountRequired)
             props.updateGivenMoney(moneyForUser)
+            
             props.updateBalance(Object.values(props.limits).reduce((acc, curr) => Number(acc) + Number(curr.sum),0))
             props.clean()
         } else {

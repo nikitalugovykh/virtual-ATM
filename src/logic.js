@@ -137,7 +137,6 @@ export const getMoneyATMWithChosenNotes = (amountRequired, limits, listOfBankNot
     let i = 0
     let currentValue = amountRequired;
     while (true) {
-        debugger
         let currentNominal = Number(listOfBankNotes[i]);
         if (currentValue === 50) {
             result[50] = 1
@@ -146,6 +145,9 @@ export const getMoneyATMWithChosenNotes = (amountRequired, limits, listOfBankNot
         if (currentValue - currentNominal >= 0) {
             currentValue -= currentNominal
             result[currentNominal] ? result[currentNominal] +=1 : result[currentNominal] = 1;
+
+            limits[`+${currentNominal}`] = {...limits[`+${currentNominal}`], countBanknotes: limits[`+${currentNominal}`].countBanknotes - 1};
+            limits.updateFinalAmount(currentNominal)
             if (currentValue === 0) break
         } else {
             i++
@@ -164,9 +166,7 @@ export const getMoneyATMWithChosenNotes = (amountRequired, limits, listOfBankNot
 }
 
 
-// const limits = new LimitAmount(854,857,696,356,279,147,73);
-
-
+// __test__
 // function getValidAmountRequired () {
 //     while (true) {
 //         let max = Object.values(limits).reduce((acc, curr) => Number(acc) + Number(curr.sum),0)
