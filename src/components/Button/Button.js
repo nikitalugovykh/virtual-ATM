@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { getMoneyATM } from '../../logic';
-import { addAmountNumPad, cleanAmount, givenMoney, requiredTotalAmount, showAlert, showInfo, updateBalance } from '../../redux/actionCreator';
+import { getMoneyATM, getMoneyATMWithChosenNotes } from '../../logic';
+import { addAmountNumPad, cleanAmount, cleanSelectNote, givenMoney, requiredTotalAmount, showAlert, showInfo, updateBalance } from '../../redux/actionCreator';
 
 const ButtonNum = styled.button`
     grid-area: num_${(props) => props.info};
@@ -18,7 +18,40 @@ const Button = (props) =>{
 
     const clickHandler = (ev) => {
         if (ev.target.textContent === 'Выдать') {
-            let moneyForUser = getMoneyATM(props.validInput, props.limits);
+            let moneyForUser
+            if(props.validAmountRequired > props.getBalance) {
+                props.showAlert('Введенная вами сумма превышает размеры этого виртуального кошелька')
+                return
+            }
+            if (props.validAmountRequired % 50 !== 0) {
+                props.showAlert('Введите сумму кратную 50')
+                props.clean()
+                return 
+            }
+            if(props.selectedNotes.length !== 0) {
+                let permission = false;
+                for (let i = 0; i < props.selectedNotes.length; i++) {
+                    if (props.validAmountRequired % props.selectedNotes[i] === 0) {
+                        permission = true
+                    }
+                }
+                if (permission) {
+                    moneyForUser = getMoneyATMWithChosenNotes(
+                        props.validAmountRequired, 
+                        props.limits, 
+                        props.selectedNotes)
+
+                    props.cleanSelectedNote()
+                } else {
+                    props.showAlert('Одна из купюр должна быть кратна запрашиваемой сумме')
+                    props.cleanSelectedNote()  
+                    return
+                }
+                 
+            } else{
+                moneyForUser = getMoneyATM(props.validInput, props.limits);
+            }
+            
             props.submitRequiredTotalAmount(props.validInput);
             props.updateGivenMoney(moneyForUser);
             props.updateBalance(Object.values(props.limits).reduce((acc, curr) => Number(acc) + Number(curr.sum),0))
@@ -55,6 +88,7 @@ const mapDispatchToProps = (dispatch) => {
         updateGivenMoney: (data) => dispatch(givenMoney(data)),
         updateBalance: (total) => dispatch(updateBalance(total)),
         showAlert: (text) => dispatch(showAlert(text)),
+        cleanSelectedNote: () => dispatch(cleanSelectNote())
     }
 }
 
@@ -62,7 +96,9 @@ const mapStateToProps = (state) => {
     return {
         validInput: state.validInput,
         limits: state.limits,
-        getBalance: state.balance        
+        getBalance: state.balance,
+        validAmountRequired: state.validInput, 
+        selectedNotes: state.selectedNotes       
     }
 }
 

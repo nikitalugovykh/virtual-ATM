@@ -30,7 +30,7 @@ const GlobalStyle = createGlobalStyle`
 `
 
 // Вводить количество купюр по номиналу соответственно 50,100,200,500,1000,2000,5000
-const limits = new LimitAmount(342,124,2154,4365,2543,562,546);
+const limits = new LimitAmount(854,857,696,356,279,147,73);
 
 
 const INITIALSTATE = {

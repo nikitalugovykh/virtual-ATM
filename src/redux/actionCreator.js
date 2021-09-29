@@ -8,7 +8,8 @@ import {
     SHOW_INFO, 
     GIVEN_MONEY, 
     SHOW_ALERT, 
-    UPDATE_BALANCE
+    UPDATE_BALANCE,
+    CLEAN_SELECT_NOTE
 } from "./actionTypes"
 
 export const addAmount = (payload) => {
@@ -38,6 +39,12 @@ export const selectNote = (payload) => {
     return  {
         type: SELECT_NOTE,
         payload
+    }
+} 
+export const cleanSelectNote = () => {
+    return  {
+        type: CLEAN_SELECT_NOTE,
+        
     }
 } 
 export const unselectNote = (payload) => {
@@ -71,4 +78,4 @@ export const updateBalance = (total) => {
         type: UPDATE_BALANCE,
         total
     }
-} 
+}

@@ -4,71 +4,6 @@
 // также определяются номиналы от вышеупомянутой купюры по убыванию, далее рекурсивно вызывается
 // функция collect, в которой определяется достаточность этого прохода для выдачи запрошенной суммы пользователем
 // погружение идет до основания рукурсии, 
-
-
-export const getMoneyATM = (amountRequired, limits) => {
-    
-    let bankNoteIndex = findMaxSum(limits)
-    let nominals = Object.keys(limits).map(Number).sort((a,b) => b - a).slice(bankNoteIndex);
-    let nominals_limitary = Object.keys(limits).map(Number).sort((a,b) => b - a);
-    // Флаг нужен, чтобы переключиться на пограничный случай 
-    // пограничный случай - когда допустим у нас есть 500:1шт, 100: 10шт, 50: 1шт, 
-    // пользователь запрашивает 1100р, так как алгорим определяет какой купюрой больше всего денег
-    // это 100, то ATM не хватит денег 
-    let flag = false;
-    // в кэше хранятся купюры которые сгорели бы при пограничном случае
-    let cache = {}
-    function collect (amount, nominals) {
-        
-        if(amount === 0) return {};
-        if(!nominals.length){
-            
-            flag = true
-            limits.updateCountBanknotes(cache);
-            return 
-        };
-
-        let currentNominal = nominals[0];
-        let availableNotes = limits[`+${currentNominal}`].countBanknotes;
-        let notesNeeded = Math.floor(amount / currentNominal);
-        let numberOfNotes = Math.min(availableNotes,notesNeeded);
-
-        if (!flag) {
-            cache[currentNominal] = numberOfNotes;
-        } 
-
-        limits[`+${currentNominal}`] = {...limits[`+${currentNominal}`], countBanknotes: limits[`+${currentNominal}`].countBanknotes - numberOfNotes};
-        if(numberOfNotes > 0) {
-            limits.updateFinalAmount(currentNominal)
-        }
-
-        let result = collect(amount - numberOfNotes * currentNominal, nominals.slice(1));
-
-        if(result) {
-            return numberOfNotes > 0 ? {[`+${currentNominal}`]: numberOfNotes, ...result} : result 
-        }
-    }
-    let res = collect(amountRequired, nominals);
-
-    return flag ? collect(amountRequired, nominals_limitary) : res
-}
-
-
-function findMaxSum(limits) {
-    let indexMaxSum = ''
-    Object.values(limits).reduce((acc,curr,index,arr) => {
-
-        if (curr.sum > acc)  {
-            // ограничение чтобы оставались 50р купюры под конец 
-            if (curr.sum < 15000 && index === 6) return acc
-            indexMaxSum = index
-            return curr.sum
-        }   
-        return acc
-    },0)
-    return indexMaxSum
-}
-
 export class LimitAmount {
     constructor(a,b,c,d,e,f,g) {
         this['+5000'] = {
@@ -114,6 +49,118 @@ export class LimitAmount {
             
         })
     }
+}
+
+export const getMoneyATM = (amountRequired, limits) => {
+    let nominals
+    let bankNoteIndex = findIndexMaxSum(limits)
+
+    if (amountRequired < 20000) {
+        nominals = getDescending(limits)
+    } else {
+        nominals = Object.keys(limits).map(Number).sort((a,b) => b - a).slice(bankNoteIndex);
+    }
+    let nominals_limitary = Object.keys(limits).map(Number).sort((a,b) => b - a);
+
+    let flag = false;
+    // в кэше хранятся купюры которые сгорели бы при пограничном случае
+    let cache = {}
+    function collect (amount, nominals) {
+        
+        if(amount === 0) return {};
+        if(!nominals.length){
+            
+            flag = true
+            limits.updateCountBanknotes(cache);
+            return 
+        };
+
+        let currentNominal = nominals[0];
+        let availableNotes = limits[`+${currentNominal}`].countBanknotes;
+        let notesNeeded = Math.floor(amount / currentNominal);
+        let numberOfNotes = Math.min(availableNotes,notesNeeded);
+
+        if (!flag) {
+            cache[currentNominal] = numberOfNotes;
+        } 
+
+        limits[`+${currentNominal}`] = {...limits[`+${currentNominal}`], countBanknotes: limits[`+${currentNominal}`].countBanknotes - numberOfNotes};
+        if(numberOfNotes > 0) {
+            limits.updateFinalAmount(currentNominal)
+        }
+
+        let result = collect(amount - numberOfNotes * currentNominal, nominals.slice(1));
+
+        if(result) {
+            return numberOfNotes > 0 ? {[`+${currentNominal}`]: numberOfNotes, ...result} : result 
+        }
+    }
+    let res = collect(amountRequired, nominals);
+
+    return flag ? collect(amountRequired, nominals_limitary) : res
+}
+
+function findIndexMaxSum(limits) {
+    let indexMaxSum = ''
+    Object.values(limits).reduce((acc,curr,index,arr) => {
+
+        if (curr.sum > acc)  {
+            // ограничение чтобы оставались 50р купюры под конец 
+            if (curr.sum < 15000 && index === 6) return acc
+            indexMaxSum = index
+            return curr.sum
+        }   
+        return acc
+    },0)
+    return indexMaxSum
+}
+
+function findMaxSum(limits) {
+    let max = Object.values(limits).reduce((acc,curr,index,arr) => {
+
+        return acc + curr.sum
+    },0)
+    return max
+}
+
+function getDescending (limits ) {
+    return Object.entries(limits).sort((a,b) => b[1].countBanknotes-a[1].countBanknotes).map(item => Number(item[0])); 
+}
+
+export const getMoneyATMWithChosenNotes = (amountRequired, limits, listOfBankNotes) => {
+    if (findMaxSum(limits) < amountRequired) {
+        console.log('Недостаточно денег');
+        return
+    } 
+    
+    let result = {}
+    let i = 0
+    let currentValue = amountRequired;
+    while (true) {
+        debugger
+        let currentNominal = Number(listOfBankNotes[i]);
+        if (currentValue === 50) {
+            result[50] = 1
+            break
+        }
+        if (currentValue - currentNominal >= 0) {
+            currentValue -= currentNominal
+            result[currentNominal] ? result[currentNominal] +=1 : result[currentNominal] = 1;
+            if (currentValue === 0) break
+        } else {
+            i++
+            if (listOfBankNotes.length === i) {
+                i = 0
+            }
+            continue
+        }
+
+        i++
+        if (listOfBankNotes.length === i) {
+            i = 0
+        }
+    }
+    return result
 }
 
 

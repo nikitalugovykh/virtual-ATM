@@ -7,7 +7,8 @@ import { ADD_AMOUNT,
         SHOW_INFO, 
         GIVEN_MONEY,
         SHOW_ALERT,
-        UPDATE_BALANCE
+        UPDATE_BALANCE,
+        CLEAN_SELECT_NOTE
 } from "./actionTypes"
 
 export const rootReducer = (state, action) => {
@@ -22,6 +23,8 @@ export const rootReducer = (state, action) => {
             return {...state, requiredTotalAmount: action.payload}
         case SELECT_NOTE:
             return {...state, selectedNotes: [...state.selectedNotes, action.payload].sort((a,b) => b - a)}
+        case CLEAN_SELECT_NOTE:
+            return {...state, selectedNotes: []}
         case UNSELECT_NOTE:
             return {...state, selectedNotes: state.selectedNotes.filter(item => item !== action.payload)}
         case SHOW_INFO:
